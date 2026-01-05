@@ -1,124 +1,168 @@
 -- Overall Churn Rate
-select 
-	count(*) as Total_Customers,
-    sum(Churn) as Total_Churned,
-    round(avg(Churn)*100,2) as Overall_Churn_Rate_Pct
-from clean_churn;
+SELECT 
+    COUNT(*) AS Total_Customers,
+    SUM(Churn) AS Total_Churned,
+    ROUND(AVG(Churn) * 100, 2) AS Overall_Churn_Rate_Pct
+FROM
+    clean_churn;
 
 -- Churn Rate Based on Contract Type
-select 
+SELECT 
     Contract,
-	count(*) as Total_Customers,
-    sum(Churn) as Total_Churned,
-    round(avg(Churn)*100,2) as Overall_Churn_Rate_Pct
-from clean_churn
-group by Contract
-order by Overall_Churn_Rate_Pct desc;
+    COUNT(*) AS Total_Customers,
+    SUM(Churn) AS Total_Churned,
+    ROUND(AVG(Churn) * 100, 2) AS Overall_Churn_Rate_Pct
+FROM
+    clean_churn
+GROUP BY Contract
+ORDER BY Overall_Churn_Rate_Pct DESC;
 
 -- Churn Rate Based on Tenure 
-select 
+SELECT 
     Tenure,
-	count(*) as Total_Customers,
-    sum(Churn) as Total_Churned,
-    round(avg(Churn)*100,2) as Overall_Churn_Rate_Pct
-from clean_churn
-group by Tenure
-order by Tenure;
+    COUNT(*) AS Total_Customers,
+    SUM(Churn) AS Total_Churned,
+    ROUND(AVG(Churn) * 100, 2) AS Overall_Churn_Rate_Pct
+FROM
+    clean_churn
+GROUP BY Tenure
+ORDER BY Tenure;
 
 -- Churn Rate Based On Regions
 
-select
-	Geography,
-    count(*) as Total_Customers,
-    sum(Churn) as Total_Churned,
-    round(avg(Churn)*100,2) as Overall_Churn_Rate_Pct
-from clean_churn
-group by GeoGraphy
-order by Overall_Churn_Rate_Pct desc;
+SELECT 
+    Geography,
+    COUNT(*) AS Total_Customers,
+    SUM(Churn) AS Total_Churned,
+    ROUND(AVG(Churn) * 100, 2) AS Overall_Churn_Rate_Pct
+FROM
+    clean_churn
+GROUP BY GeoGraphy
+ORDER BY Overall_Churn_Rate_Pct DESC;
 
 
-select
-	case
-		when UsageScore < 20 then "Very Low Usage"
-        when UsageScore between 20 and 60 then "Moderate Usage"
-        else "High Usage"
-	end as Usage_Bracket,
-	round(avg(SupportTickets),2) as Avg_Tickets,
-    round(avg(Churn)*100,2) as Overall_Churn_Rate_Pct
-from clean_churn
-group by Usage_Bracket
-Order by Overall_Churn_Rate_Pct desc;
+SELECT 
+    CASE
+        WHEN UsageScore < 20 THEN 'Very Low Usage'
+        WHEN UsageScore BETWEEN 20 AND 60 THEN 'Moderate Usage'
+        ELSE 'High Usage'
+    END AS Usage_Bracket,
+    ROUND(AVG(SupportTickets), 2) AS Avg_Tickets,
+    ROUND(AVG(Churn) * 100, 2) AS Overall_Churn_Rate_Pct
+FROM
+    clean_churn
+GROUP BY Usage_Bracket
+ORDER BY Overall_Churn_Rate_Pct DESC;
 
 -- Revenue
-select
-	Geography,
-    round(sum(case when Churn=1 then MonthlyCharges else 0 end),2) as Revenue_Lost,
-    round(sum(case when Churn=0 then MonthlyCharges else 0 end),2) as Revenue_Retained,
-    round(sum(case when Churn=1 then MonthlyCharges else 0 end)/sum(MonthlyCharges)*100,2) as Revenue_Churn_Rate
-from clean_churn
-group by Geography
-order by Revenue_Churn_Rate desc;
+SELECT 
+    Geography,
+    ROUND(SUM(CASE
+                WHEN Churn = 1 THEN MonthlyCharges
+                ELSE 0
+            END),
+            2) AS Revenue_Lost,
+    ROUND(SUM(CASE
+                WHEN Churn = 0 THEN MonthlyCharges
+                ELSE 0
+            END),
+            2) AS Revenue_Retained,
+    ROUND(SUM(CASE
+                WHEN Churn = 1 THEN MonthlyCharges
+                ELSE 0
+            END) / SUM(MonthlyCharges) * 100,
+            2) AS Revenue_Churn_Rate
+FROM
+    clean_churn
+GROUP BY Geography
+ORDER BY Revenue_Churn_Rate DESC;
 
 -- MothlyCharges vs Support Tickets
-select
-	case
-		when MonthlyCharges > 80 then "High Cost"
-        else "Low Cost"
-	end as Customer_Category,
-    case
-		when SupportTickets > 4 then "High Tickets (5+)"
-        else "Low Tickets (0-4)"
-	end as Support_Tickets,
-count(*) as Customer_Count,
-sum(case when Churn = 1 then 1 else 0 end) as Churned_Customers,
-round(avg(Churn)*100,2) as Overall_Churn_Rate_Pct
-from clean_churn
-group by Customer_Category,Support_Tickets
-order by Customer_Category;
+SELECT 
+    CASE
+        WHEN MonthlyCharges > 80 THEN 'High Cost'
+        ELSE 'Low Cost'
+    END AS Customer_Category,
+    CASE
+        WHEN SupportTickets > 4 THEN 'High Tickets (5+)'
+        ELSE 'Low Tickets (0-4)'
+    END AS Support_Tickets,
+    COUNT(*) AS Customer_Count,
+    SUM(CASE
+        WHEN Churn = 1 THEN 1
+        ELSE 0
+    END) AS Churned_Customers,
+    ROUND(AVG(Churn) * 100, 2) AS Overall_Churn_Rate_Pct
+FROM
+    clean_churn
+GROUP BY Customer_Category , Support_Tickets
+ORDER BY Customer_Category;
 
 -- High value customers at risk
-select 
-	CustomerID,
+SELECT 
+    CustomerID,
     Geography,
     MonthlyCharges,
     UsageScore,
     SupportTickets
-from clean_churn
-where Churn = 0 and MonthlyCharges > (select avg(MonthlyCharges) from clean_churn) and
-(UsageScore < 30 or SupportTickets > 5)
-order by MonthlyCharges desc; 
+FROM
+    clean_churn
+WHERE
+    Churn = 0
+        AND MonthlyCharges > (SELECT 
+            AVG(MonthlyCharges)
+        FROM
+            clean_churn)
+        AND (UsageScore < 30 OR SupportTickets > 5)
+ORDER BY MonthlyCharges DESC;
 
 -- Tenure vs Revenue
-select
-	case
-    when Tenure <= 12 then "New (0-1yr)"
-    when Tenure between 13 and 36 then "Established (1-3yr)"
-    else "Veteran (3yr+)"
-    end as Loyalty_Phase,
-    round(avg(MonthlyCharges),2) as Monthly_Revenue,
-    round(avg(Churn)*100,2) as Overall_Churn_Rate_Pct
-from clean_churn
-group by Loyalty_Phase
+SELECT 
+    CASE
+        WHEN Tenure <= 12 THEN 'New (0-1yr)'
+        WHEN Tenure BETWEEN 13 AND 36 THEN 'Established (1-3yr)'
+        ELSE 'Veteran (3yr+)'
+    END AS Loyalty_Phase,
+    ROUND(AVG(MonthlyCharges), 2) AS Monthly_Revenue,
+    ROUND(AVG(Churn) * 100, 2) AS Overall_Churn_Rate_Pct
+FROM
+    clean_churn
+GROUP BY Loyalty_Phase
 ;
 
 -- Churn Rate Based on Demographic
 
-select 
-	Gender,
+SELECT 
+    Gender,
     Age,
-    count(*) as Total_Count,
-    round(avg(Churn)*100,2) as Overall_Churn_Rate_Pct
-from clean_churn
-group by Gender,Age
-order by Overall_Churn_Rate_Pct;
+    COUNT(*) AS Total_Count,
+    ROUND(AVG(Churn) * 100, 2) AS Overall_Churn_Rate_Pct
+FROM
+    clean_churn
+GROUP BY Gender , Age
+ORDER BY Overall_Churn_Rate_Pct;
 
 SELECT 
     Geography,
     ROUND(SUM(MonthlyCharges), 2) AS Total_Potential_MRR,
-    ROUND(SUM(CASE WHEN Churn = 1 THEN MonthlyCharges ELSE 0 END), 2) AS Lost_MRR,
-    ROUND(AVG(CASE WHEN Churn = 1 THEN MonthlyCharges ELSE NULL END), 2) AS Avg_Charge_of_Churned_User,
-    ROUND((SUM(CASE WHEN Churn = 1 THEN MonthlyCharges ELSE 0 END) / SUM(MonthlyCharges)) * 100, 2) AS Revenue_Churn_Pct
-FROM clean_churn
-WHERE Geography IN ('East', 'North')
+    ROUND(SUM(CASE
+                WHEN Churn = 1 THEN MonthlyCharges
+                ELSE 0
+            END),
+            2) AS Lost_MRR,
+    ROUND(AVG(CASE
+                WHEN Churn = 1 THEN MonthlyCharges
+                ELSE NULL
+            END),
+            2) AS Avg_Charge_of_Churned_User,
+    ROUND((SUM(CASE
+                WHEN Churn = 1 THEN MonthlyCharges
+                ELSE 0
+            END) / SUM(MonthlyCharges)) * 100,
+            2) AS Revenue_Churn_Pct
+FROM
+    clean_churn
+WHERE
+    Geography IN ('East' , 'North')
 GROUP BY Geography;
 
