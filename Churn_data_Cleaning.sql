@@ -7,145 +7,216 @@ select * from (
     row_number() over(partition by CustomerID) as row_num
     from raw_churn
 ) as temp
-where row_num=1;    
-select * from clean_churn;
+where row_num=1;
+SELECT 
+    *
+FROM
+    clean_churn;
 
 -- Remove row_num column 
 alter table clean_churn 
 drop column row_num;
 
 -- Making Gender column Consistent
-select distinct Gender
-from clean_churn;
+SELECT DISTINCT
+    Gender
+FROM
+    clean_churn;
 
-select gender,
-(case when Gender like "M%" then "Male" 
-    when Gender like "F%" then "Female"
-    else "Non-binary"
-    end)
-from clean_churn;
+SELECT 
+    gender,
+    (CASE
+        WHEN Gender LIKE 'M%' THEN 'Male'
+        WHEN Gender LIKE 'F%' THEN 'Female'
+        ELSE 'Non-binary'
+    END)
+FROM
+    clean_churn;
 
-update clean_churn
-set Gender = 
-	(case when Gender like "M%" then "Male" 
-    when Gender like "F%" then "Female"
-    else "Non-binary"
-    end);
+UPDATE clean_churn 
+SET 
+    Gender = (CASE
+        WHEN Gender LIKE 'M%' THEN 'Male'
+        WHEN Gender LIKE 'F%' THEN 'Female'
+        ELSE 'Non-binary'
+    END);
     
 -- Making Contract column Consistent
-select distinct Contract 
-from clean_churn;
-select distinct Contract,
-(case
-		when Contract = "m2m" or Contract="Month-to-month" then "Monthly"
-        when Contract = "1yr" or Contract="One year" then "One year"
-        else "Two year"
-        end) as cleanrow
-from clean_churn;
+SELECT DISTINCT
+    Contract
+FROM
+    clean_churn;
+SELECT DISTINCT
+    Contract,
+    (CASE
+        WHEN
+            Contract = 'm2m'
+                OR Contract = 'Month-to-month'
+        THEN
+            'Monthly'
+        WHEN
+            Contract = '1yr'
+                OR Contract = 'One year'
+        THEN
+            'One year'
+        ELSE 'Two year'
+    END) AS cleanrow
+FROM
+    clean_churn;
 
 
-update clean_churn
-set Contract = 
-	(case
-		when Contract = "m2m" or Contract="Month-to-month" then "Monthly"
-        when Contract = "1yr" or Contract="One year" then "One year"
-        else "Two year"
-        end);
+UPDATE clean_churn 
+SET 
+    Contract = (CASE
+        WHEN
+            Contract = 'm2m'
+                OR Contract = 'Month-to-month'
+        THEN
+            'Monthly'
+        WHEN
+            Contract = '1yr'
+                OR Contract = 'One year'
+        THEN
+            'One year'
+        ELSE 'Two year'
+    END);
 
 -- Fill the blanks with Zeros(0) in SupportTickets Column
-select * from clean_churn
-where SupportTickets is null;
+SELECT 
+    *
+FROM
+    clean_churn
+WHERE
+    SupportTickets IS NULL;
 
-update clean_churn
-set SupportTickets = null
-where SupportTickets = "";
+UPDATE clean_churn 
+SET 
+    SupportTickets = NULL
+WHERE
+    SupportTickets = '';
 
-update clean_churn
-set SupportTickets = 0
-where SupportTickets is null;
+UPDATE clean_churn 
+SET 
+    SupportTickets = 0
+WHERE
+    SupportTickets IS NULL;
 
 -- Removing the "$" sign in all records and changed the data type to decimal
-select TotalCharges, replace(replace(TotalCharges, "$",""),",","")
-from clean_churn;
+SELECT 
+    TotalCharges,
+    REPLACE(REPLACE(TotalCharges, '$', ''),
+        ',',
+        '')
+FROM
+    clean_churn;
 
-update clean_churn
-set TotalCharges = replace(replace(TotalCharges, "$",""),",","");
+UPDATE clean_churn 
+SET 
+    TotalCharges = REPLACE(REPLACE(TotalCharges, '$', ''),
+        ',',
+        '');
 
-select TotalCharges
-from clean_churn;
+SELECT 
+    TotalCharges
+FROM
+    clean_churn;
 
 alter table clean_churn
 modify column TotalCharges decimal(10,2);
 
 -- Replacing the values (-5 and 250) with "Unknown/Missing" and created age buckets
-update clean_churn
-set Age = null
-where Age < 18 or Age > 100;
+UPDATE clean_churn 
+SET 
+    Age = NULL
+WHERE
+    Age < 18 OR Age > 100;
 
-select Contract, avg(Age) from clean_churn
-group by Contract;
+SELECT 
+    Contract, AVG(Age)
+FROM
+    clean_churn
+GROUP BY Contract;
 
-select Contract, avg(Age) as Avg_Age
-from clean_churn
-where Age is not null
-group by Contract
+SELECT 
+    Contract, AVG(Age) AS Avg_Age
+FROM
+    clean_churn
+WHERE
+    Age IS NOT NULL
+GROUP BY Contract
 ;
 
-select Age,
-	case
-        when Age between 18 and 30 then "1. Young Adult (18-30)"
-        when Age between 31 and 50 then "2. Adult (31-50)"
-        when Age between 51 and 100 then "3. Senior (51+)"
-        else "4. Unkownn/Missing"
-	end as Age_group
-from clean_churn;
+SELECT 
+    Age,
+    CASE
+        WHEN Age BETWEEN 18 AND 30 THEN '1. Young Adult (18-30)'
+        WHEN Age BETWEEN 31 AND 50 THEN '2. Adult (31-50)'
+        WHEN Age BETWEEN 51 AND 100 THEN '3. Senior (51+)'
+        ELSE '4. Unkownn/Missing'
+    END AS Age_group
+FROM
+    clean_churn;
 
 -- Changed the column data type to text from int
 alter table clean_churn
 modify column Age text;
 
-update clean_churn
-set Age = 
-	(case
-        when Age between 18 and 30 then "1. Young Adult (18-30)"
-        when Age between 31 and 50 then "2. Adult (31-50)"
-        when Age between 51 and 100 then "3. Senior (51+)"
-        else "4. Unkownn/Missing"
-	end);
+UPDATE clean_churn 
+SET 
+    Age = (CASE
+        WHEN Age BETWEEN 18 AND 30 THEN '1. Young Adult (18-30)'
+        WHEN Age BETWEEN 31 AND 50 THEN '2. Adult (31-50)'
+        WHEN Age BETWEEN 51 AND 100 THEN '3. Senior (51+)'
+        ELSE '4. Unkownn/Missing'
+    END);
 
-select Age from clean_churn
-group by Age;
+SELECT 
+    Age
+FROM
+    clean_churn
+GROUP BY Age;
 
 -- Changed the data type text to int
 alter table clean_churn
 modify column SupportTickets int;
 
-select SupportTickets, count(*)
-from clean_churn
-group by SupportTickets;
+SELECT 
+    SupportTickets, COUNT(*)
+FROM
+    clean_churn
+GROUP BY SupportTickets;
 
 -- Replacing the blank values with average values by grouping with tenure
-update clean_churn
-set UsageScore = null
-where UsageScore = "";
+UPDATE clean_churn 
+SET 
+    UsageScore = NULL
+WHERE
+    UsageScore = '';
 
 alter table clean_churn
 modify column UsageScore double;
 
-select * from clean_churn;
+SELECT 
+    *
+FROM
+    clean_churn;
 
-select Tenure, 
-	round(avg(UsageScore),2) 
-from clean_churn
-group by Tenure;
+SELECT 
+    Tenure, ROUND(AVG(UsageScore), 2)
+FROM
+    clean_churn
+GROUP BY Tenure;
 
-update clean_churn t1
-join (
-select Tenure,
-	round(avg(UsageScore),2) as avg_usage
-from clean_churn
-where UsageScore is not null
-group by Tenure) t2
-on t1.Tenure = t2.Tenure
-set t1.UsageScore = t2.avg_usage
-where t1.UsageScore is null;
+UPDATE clean_churn t1
+        JOIN
+    (SELECT 
+        Tenure, ROUND(AVG(UsageScore), 2) AS avg_usage
+    FROM
+        clean_churn
+    WHERE
+        UsageScore IS NOT NULL
+    GROUP BY Tenure) t2 ON t1.Tenure = t2.Tenure 
+SET 
+    t1.UsageScore = t2.avg_usage
+WHERE
+    t1.UsageScore IS NULL;
