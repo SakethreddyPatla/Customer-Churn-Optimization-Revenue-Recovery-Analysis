@@ -3,6 +3,8 @@
 This project provides an end-to-end solution for identifying and mitigating customer attrition in a 10,000-user subscription dataset. By integrating SQL data engineering, Power BI visualization, and Python machine learning, I transformed raw data into a strategic roadmap that identifies $272K in revenue risk.
 
 The analysis revealed that churn is not random; specific high-friction segments experience attrition rates as high as 78%. This project enables a transition from reactive reporting to proactive retention by providing individualized risk scores for at-risk customers.
+<img width="340" height="176" alt="image" src="https://github.com/user-attachments/assets/c303cca7-b241-4d42-b85d-7e6d402dc444" />
+<img width="340" height="176" alt="image" src="https://github.com/user-attachments/assets/1f057a84-1eb3-4795-a21d-80c61f51027d" />
 #### Tech Stack
 - Database: MySQL 
 - Analysis: Advanced SQL (CTEs, Window Functions, Aggregate Joins), Predicitive Modelling (Python)
@@ -30,5 +32,5 @@ Before analyzing anything, I fixed several data quality issues to make sure the 
 #### Predictive Modeling (Python)
 Moved beyond historical data to forecast future attrition.
 - Algorithm: Trained a Random Forest Classifier achieving an accuracy of 69.7%.
-- Key Driver Analysis: Mathematically proved that Monthly Charges is the #1 predictor of churn, followed by Usage Scores and Tenure.
+- Key Driver Analysis: Mathematically proved that Contract is the #1 predictor of churn, followed by Usage Scores and Monthly Charges.
 - Proactive Retention: Generated a Risk Watchlist with individual probability scores, allowing for targeted interventions before customers cancel.
