@@ -1,10 +1,12 @@
 # Customer-Churn-Optimization-Revenue-Recovery-Analysis
 #### Executive Summary
-This project digs into a 10,000‑row customer dataset to understand why people leave and which groups are most at risk. After cleaning and standardizing the raw data using a SQL pipeline, I ran a detailed exploratory analysis that uncovered several high‑churn segments—some with churn rates as high as 78%. Based on these findings, I developed a set of targeted retention strategies to help recover lost revenue.
+This project provides an end-to-end solution for identifying and mitigating customer attrition in a 10,000-user subscription dataset. By integrating SQL data engineering, Power BI visualization, and Python machine learning, I transformed raw data into a strategic roadmap that identifies $272K in revenue risk.
+
+The analysis revealed that churn is not random; specific high-friction segments experience attrition rates as high as 78%. This project enables a transition from reactive reporting to proactive retention by providing individualized risk scores for at-risk customers.
 #### Tech Stack
-Database: MySQL 
-Analysis: Advanced SQL (CTEs, Window Functions, Aggregate Joins)
-Logic: Feature Engineering and Correlation Analysis
+- Database: MySQL 
+- Analysis: Advanced SQL (CTEs, Window Functions, Aggregate Joins), Predicitive Modelling (Python)
+- Logic: Feature Engineering and Correlation Analysis
 #### Data Cleaning Highlights
 Before analyzing anything, I fixed several data quality issues to make sure the results were reliable:
 - Removed duplicates: Eliminated about 200 repeated records using ROW_NUMBER() and CTEs.
@@ -25,3 +27,8 @@ Before analyzing anything, I fixed several data quality issues to make sure the 
 - Proactive “Health Checks”: Personally reach out to high‑value customers who have more than 3 support tickets before they churn.
 - Promote Annual Plans: Encourage monthly users to switch to annual contracts, which improves retention by about 35%.
 - Improve Onboarding: Add automated “value touchpoints” around Month 2 and Month 5 to support customers during the periods where churn spikes.
+#### Predictive Modeling (Python)
+Moved beyond historical data to forecast future attrition.
+- Algorithm: Trained a Random Forest Classifier achieving an accuracy of 69.7%.
+- Key Driver Analysis: Mathematically proved that Monthly Charges is the #1 predictor of churn, followed by Usage Scores and Tenure.
+- Proactive Retention: Generated a Risk Watchlist with individual probability scores, allowing for targeted interventions before customers cancel.
